@@ -27,6 +27,7 @@ struct Config<'a> {
     sbf_tools_version: &'a str,
     dump: bool,
     features: Vec<String>,
+    force_tools_install: bool,
     generate_child_script_on_failure: bool,
     no_default_features: bool,
     offline: bool,
@@ -53,6 +54,7 @@ impl Default for Config<'_> {
             sbf_tools_version: "(unknown)",
             dump: false,
             features: vec![],
+            force_tools_install: false,
             generate_child_script_on_failure: false,
             no_default_features: false,
             offline: false,
@@ -72,7 +74,7 @@ where
     S: AsRef<OsStr>,
 {
     let args = args.into_iter().collect::<Vec<_>>();
-    let mut msg = format!("cargo-build-sbf child: {}", program.display());
+    let mut msg = format!("spawn: {}", program.display());
     for arg in args.iter() {
         msg = msg + &format!(" {}", arg.as_ref().to_str().unwrap_or("?")).to_string();
     }
@@ -100,7 +102,7 @@ where
         let file = File::create(&script_name).unwrap();
         let mut out = BufWriter::new(file);
         for (key, value) in env::vars() {
-            writeln!(out, "{}=\"{}\" \\", key, value).unwrap();
+            writeln!(out, "{key}=\"{value}\" \\").unwrap();
         }
         write!(out, "{}", program.display()).unwrap();
         for arg in args.iter() {
@@ -130,6 +132,18 @@ fn install_if_missing(
     download_file_name: &str,
     target_path: &Path,
 ) -> Result<(), String> {
+    if config.force_tools_install {
+        if target_path.is_dir() {
+            debug!("Remove directory {:?}", target_path);
+            fs::remove_dir_all(target_path).map_err(|err| err.to_string())?;
+        }
+        let source_base = config.sbf_sdk.join("dependencies");
+        if source_base.exists() {
+            let source_path = source_base.join(package);
+            debug!("Remove file {:?}", source_path);
+            fs::remove_file(source_path).map_err(|err| err.to_string())?;
+        }
+    }
     // Check whether the target path is an empty directory. This can
     // happen if package download failed on previous run of
     // cargo-build-sbf.  Remove the target_path directory in this
@@ -141,6 +155,7 @@ fn install_if_missing(
             .next()
             .is_none()
     {
+        debug!("Remove directory {:?}", target_path);
         fs::remove_dir(target_path).map_err(|err| err.to_string())?;
     }
 
@@ -153,6 +168,7 @@ fn install_if_missing(
             .unwrap_or(false)
     {
         if target_path.exists() {
+            debug!("Remove file {:?}", target_path);
             fs::remove_file(target_path).map_err(|err| err.to_string())?;
         }
         fs::create_dir_all(target_path).map_err(|err| err.to_string())?;
@@ -263,7 +279,7 @@ fn postprocess_dump(program_dump: &Path) {
         if head_re.is_match(line) {
             let captures = head_re.captures(line).unwrap();
             pc = u64::from_str_radix(&captures[1], 16).unwrap();
-            writeln!(out, "{}", line).unwrap();
+            writeln!(out, "{line}").unwrap();
             continue;
         }
         if insn_re.is_match(line) {
@@ -286,11 +302,11 @@ fn postprocess_dump(program_dump: &Path) {
                 if a2n.contains_key(&address) {
                     writeln!(out, "{} ; {}", line, a2n[&address]).unwrap();
                 } else {
-                    writeln!(out, "{}", line).unwrap();
+                    writeln!(out, "{line}").unwrap();
                 }
             }
         } else {
-            writeln!(out, "{}", line).unwrap();
+            writeln!(out, "{line}").unwrap();
         }
         pc = pc.checked_add(step).unwrap();
     }
@@ -370,7 +386,7 @@ fn link_sbf_toolchain(config: &Config) {
     let rustup_args = vec!["toolchain", "list", "-v"];
     let rustup_output = spawn(
         &rustup,
-        &rustup_args,
+        rustup_args,
         config.generate_child_script_on_failure,
     );
     if config.verbose {
@@ -390,7 +406,7 @@ fn link_sbf_toolchain(config: &Config) {
                 ];
                 let output = spawn(
                     &rustup,
-                    &rustup_args,
+                    rustup_args,
                     config.generate_child_script_on_failure,
                 );
                 if config.verbose {
@@ -411,7 +427,7 @@ fn link_sbf_toolchain(config: &Config) {
         ];
         let output = spawn(
             &rustup,
-            &rustup_args,
+            rustup_args,
             config.generate_child_script_on_failure,
         );
         if config.verbose {
@@ -599,7 +615,7 @@ fn build_sbf_package(config: &Config, target_directory: &Path, package: &cargo_m
         target_rustflags = Cow::Owned(format!("{} -C target_cpu=sbfv2", &target_rustflags));
     }
     if let Cow::Owned(flags) = target_rustflags {
-        env::set_var(cargo_target, &flags);
+        env::set_var(cargo_target, flags);
     }
     if config.verbose {
         debug!(
@@ -659,11 +675,11 @@ fn build_sbf_package(config: &Config, target_directory: &Path, package: &cargo_m
     }
 
     if let Some(program_name) = program_name {
-        let program_unstripped_so = target_build_directory.join(&format!("{}.so", program_name));
-        let program_dump = sbf_out_dir.join(&format!("{}-dump.txt", program_name));
-        let program_so = sbf_out_dir.join(&format!("{}.so", program_name));
-        let program_debug = sbf_out_dir.join(&format!("{}.debug", program_name));
-        let program_keypair = sbf_out_dir.join(&format!("{}-keypair.json", program_name));
+        let program_unstripped_so = target_build_directory.join(format!("{program_name}.so"));
+        let program_dump = sbf_out_dir.join(format!("{program_name}-dump.txt"));
+        let program_so = sbf_out_dir.join(format!("{program_name}.so"));
+        let program_debug = sbf_out_dir.join(format!("{program_name}.debug"));
+        let program_keypair = sbf_out_dir.join(format!("{program_name}-keypair.json"));
 
         fn file_older_or_missing(prerequisite_file: &Path, target_file: &Path) -> bool {
             let prerequisite_metadata = fs::metadata(prerequisite_file).unwrap_or_else(|err| {
@@ -699,7 +715,7 @@ fn build_sbf_package(config: &Config, target_directory: &Path, package: &cargo_m
             #[cfg(windows)]
             let output = spawn(
                 &llvm_bin.join("llvm-objcopy"),
-                &[
+                [
                     "--strip-all".as_ref(),
                     program_unstripped_so.as_os_str(),
                     program_so.as_os_str(),
@@ -830,7 +846,7 @@ fn main() {
 
     // The following line is scanned by CI configuration script to
     // separate cargo caches according to the version of sbf-tools.
-    let sbf_tools_version = "v1.29";
+    let sbf_tools_version = "v1.32";
     let version = format!("{}\nsbf-tools {}", crate_version!(), sbf_tools_version);
     let matches = clap::Command::new(crate_name!())
         .about(crate_description!())
@@ -885,6 +901,12 @@ fn main() {
                 .multiple_occurrences(true)
                 .multiple_values(true)
                 .help("Space-separated list of features to activate"),
+        )
+        .arg(
+            Arg::new("force_tools_install")
+                .long("force-tools-install")
+                .takes_value(false)
+                .help("Download and install sbf-tools even when existing tools are located"),
         )
         .arg(
             Arg::new("generate_child_script_on_failure")
@@ -970,6 +992,7 @@ fn main() {
         sbf_tools_version,
         dump: matches.is_present("dump"),
         features: matches.values_of_t("features").ok().unwrap_or_default(),
+        force_tools_install: matches.is_present("force_tools_install"),
         generate_child_script_on_failure: matches.is_present("generate_child_script_on_failure"),
         no_default_features: matches.is_present("no_default_features"),
         remap_cwd: !matches.is_present("remap_cwd"),

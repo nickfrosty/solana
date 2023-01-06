@@ -210,7 +210,7 @@ impl<T: Clone + Copy> Bucket<T> {
         let mut m = Measure::start("bucket_create_key");
         let ix = Self::bucket_index_ix(index, key, random);
         for i in ix..ix + index.max_search() {
-            let ii = i as u64 % index.capacity();
+            let ii = i % index.capacity();
             if !index.is_free(ii) {
                 continue;
             }
@@ -353,7 +353,7 @@ impl<T: Clone + Copy> Bucket<T> {
             let increment = 1;
             for i in increment.. {
                 //increasing the capacity by ^4 reduces the
-                //likelyhood of a re-index collision of 2^(max_search)^2
+                //likelihood of a re-index collision of 2^(max_search)^2
                 //1 in 2^32
                 let mut index = BucketStorage::new_with_capacity(
                     Arc::clone(&self.drives),

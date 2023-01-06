@@ -296,7 +296,7 @@ impl BucketStorage {
         data.seek(SeekFrom::Start(capacity * cell_size as u64 - 1))
             .unwrap();
         data.write_all(&[0]).unwrap();
-        data.seek(SeekFrom::Start(0)).unwrap();
+        data.rewind().unwrap();
         measure_new_file.stop();
         let mut measure_flush = Measure::start("measure_flush");
         data.flush().unwrap(); // can we skip this?
@@ -324,7 +324,7 @@ impl BucketStorage {
 
         let increment = self.capacity_pow2 - old_bucket.capacity_pow2;
         let index_grow = 1 << increment;
-        (0..old_cap as usize).into_iter().for_each(|i| {
+        (0..old_cap as usize).for_each(|i| {
             let old_ix = i * old_bucket.cell_size as usize;
             let new_ix = old_ix * index_grow;
             let dst_slice: &[u8] = &self.mmap[new_ix..new_ix + old_bucket.cell_size as usize];
@@ -381,16 +381,12 @@ impl BucketStorage {
 
 #[cfg(test)]
 mod test {
-    use super::*;
+    use {super::*, tempfile::tempdir};
 
     #[test]
     fn test_bucket_storage() {
-        let tmpdir1 = std::env::temp_dir().join("bucket_map_test_mt");
-        let paths: Vec<PathBuf> = [tmpdir1]
-            .iter()
-            .filter(|x| std::fs::create_dir_all(x).is_ok())
-            .cloned()
-            .collect();
+        let tmpdir = tempdir().unwrap();
+        let paths: Vec<PathBuf> = vec![tmpdir.path().to_path_buf()];
         assert!(!paths.is_empty());
 
         let mut storage =

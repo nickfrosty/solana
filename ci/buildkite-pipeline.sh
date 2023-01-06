@@ -24,6 +24,12 @@ annotate() {
   fi
 }
 
+# Assume everyting needs to be tested when this file or any Dockerfile changes
+mandatory_affected_files=()
+mandatory_affected_files+=(^ci/buildkite-pipeline.sh)
+mandatory_affected_files+=(^ci/docker-rust/Dockerfile)
+mandatory_affected_files+=(^ci/docker-rust-nightly/Dockerfile)
+
 # Checks if a CI pull request affects one or more path patterns.  Each
 # pattern argument is checked in series. If one of them found to be affected,
 # return immediately as such.
@@ -42,8 +48,7 @@ affects() {
     # the worse (affected)
     return 0
   fi
-  # Assume everyting needs to be tested when any Dockerfile changes
-  for pattern in ^ci/docker-rust/Dockerfile ^ci/docker-rust-nightly/Dockerfile "$@"; do
+  for pattern in "${mandatory_affected_files[@]}" "$@"; do
     if [[ ${pattern:0:1} = "!" ]]; then
       for file in "${affected_files[@]}"; do
         if [[ ! $file =~ ${pattern:1} ]]; then
@@ -176,6 +181,10 @@ all_test_steps() {
              ^fetch-perf-libs.sh \
              ^programs/ \
              ^sdk/ \
+             cargo-build-bpf$ \
+             cargo-test-bpf$ \
+             cargo-build-sbf$ \
+             cargo-test-sbf$ \
       ; then
     cat >> "$output_file" <<"EOF"
   - command: "ci/test-stable-sbf.sh"
@@ -183,7 +192,7 @@ all_test_steps() {
     timeout_in_minutes: 35
     artifact_paths: "sbf-dumps.tar.bz2"
     agents:
-      queue: "gcp"
+      queue: "solana"
 EOF
   else
     annotate --style info \
@@ -231,6 +240,10 @@ EOF
              ^programs/ \
              ^sdk/ \
              ^scripts/build-downstream-projects.sh \
+             cargo-build-bpf$ \
+             cargo-test-bpf$ \
+             cargo-build-sbf$ \
+             cargo-test-sbf$ \
       ; then
     cat >> "$output_file" <<"EOF"
   - command: "scripts/build-downstream-projects.sh"
@@ -296,6 +309,29 @@ pull_or_push_steps() {
   if affects .sh$; then
     command_step shellcheck "ci/shellcheck.sh" 5
     wait_step
+  fi
+
+  # Version bump PRs are an edge case that can skip most of the CI steps
+  if affects .toml$ && affects .lock$ && ! affects_other_than .toml$ .lock$; then
+    optional_old_version_number=$(git diff "$BUILDKITE_PULL_REQUEST_BASE_BRANCH"..HEAD validator/Cargo.toml | \
+      grep -e "^-version" | sed  's/-version = "\(.*\)"/\1/')
+    echo "optional_old_version_number: ->$optional_old_version_number<-"
+    new_version_number=$(grep -e  "^version = " validator/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+    echo "new_version_number: ->$new_version_number<-"
+
+    # Every line in a version bump diff will match one of these patterns. Since we're using grep -v the output is the
+    # lines that don't match. Any diff that produces output here is not a version bump.
+    # | cat is a no-op. If this pull request is a version bump then grep will output no lines and have an exit code of 1.
+    # Piping the output to cat prevents that non-zero exit code from exiting this script
+    diff_other_than_version_bump=$(git diff "$BUILDKITE_PULL_REQUEST_BASE_BRANCH"..HEAD | \
+      grep -vE "^ |^@@ |^--- |^\+\+\+ |^index |^diff |^-( \")?solana.*$optional_old_version_number|^\+( \")?solana.*$new_version_number|^-version|^\+version"|cat)
+    echo "diff_other_than_version_bump: ->$diff_other_than_version_bump<-"
+
+    if [ -z "$diff_other_than_version_bump" ]; then
+      echo "Diff only contains version bump."
+      command_step checks ". ci/rust-version.sh; ci/docker-run.sh \$\$rust_nightly_docker_image ci/test-checks.sh" 20
+      exit 0
+    fi
   fi
 
   # Run the full test suite by default, skipping only if modifications are local

@@ -305,14 +305,14 @@ impl BroadcastRun for BroadcastDuplicatesRun {
             .iter()
             .filter_map(|shred| {
                 let node = cluster_nodes.get_broadcast_peer(&shred.id())?;
-                if ContactInfo::is_valid_address(&node.tvu, socket_addr_space) {
+                if !ContactInfo::is_valid_address(&node.tvu, socket_addr_space) {
                     return None;
                 }
                 if self
                     .original_last_data_shreds
                     .lock()
                     .unwrap()
-                    .remove(&shred.signature())
+                    .remove(shred.signature())
                 {
                     if cluster_partition.contains(&node.id) {
                         info!(
@@ -327,7 +327,7 @@ impl BroadcastRun for BroadcastDuplicatesRun {
                     .partition_last_data_shreds
                     .lock()
                     .unwrap()
-                    .remove(&shred.signature())
+                    .remove(shred.signature())
                 {
                     // If the shred is part of the partition, broadcast it directly to the
                     // partition node. This is to account for cases when the partition stake

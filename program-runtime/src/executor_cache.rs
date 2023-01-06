@@ -1,11 +1,8 @@
 use {
-    crate::invoke_context::InvokeContext,
+    crate::executor::Executor,
     log::*,
     rand::Rng,
-    solana_sdk::{
-        instruction::InstructionError, pubkey::Pubkey, saturating_add_assign, slot_history::Slot,
-        stake_history::Epoch, transaction_context::IndexOfAccount,
-    },
+    solana_sdk::{pubkey::Pubkey, saturating_add_assign, slot_history::Slot, stake_history::Epoch},
     std::{
         collections::HashMap,
         fmt::Debug,
@@ -17,19 +14,9 @@ use {
     },
 };
 
-/// Program executor
-pub trait Executor: Debug + Send + Sync {
-    /// Execute the program
-    fn execute(
-        &self,
-        first_instruction_account: IndexOfAccount,
-        invoke_context: &mut InvokeContext,
-    ) -> Result<(), InstructionError>;
-}
-
 /// Relation between a TransactionExecutorCacheEntry and its matching BankExecutorCacheEntry
 #[repr(u8)]
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum TxBankExecutorCacheDiff {
     /// The TransactionExecutorCacheEntry did not change and is the same as the BankExecutorCacheEntry.
     None,
@@ -386,7 +373,6 @@ mod tests {
     impl Executor for TestExecutor {
         fn execute(
             &self,
-            _first_instruction_account: IndexOfAccount,
             _invoke_context: &mut InvokeContext,
         ) -> std::result::Result<(), InstructionError> {
             Ok(())

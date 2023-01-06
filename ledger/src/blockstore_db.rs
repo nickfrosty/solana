@@ -145,14 +145,28 @@ pub mod columns {
     pub struct SlotMeta;
 
     #[derive(Debug)]
-    /// The orphans column
+    /// The orphans column.
+    ///
+    /// This column family tracks whether a slot has a parent.  Slots without a
+    /// parent are by definition orphan slots.  Orphans will have an entry in
+    /// this column family with true value.  Once an orphan slot has a parent,
+    /// its entry in this column will be deleted.
     ///
     /// index type: u64 (see `SlotColumn`)
     /// value type: bool
     pub struct Orphans;
 
     #[derive(Debug)]
-    /// The dead slots column
+    /// The dead slots column.
+    /// This column family tracks whether a slot is dead.
+    ///
+    /// A slot is marked as dead if the validator thinks it will never be able
+    /// to successfully replay this slot.  Example scenarios include errors
+    /// during the replay of a slot, or the validator believes it will never
+    /// receive all the shreds of a slot.
+    ///
+    /// If a slot has been mistakenly marked as dead, the ledger-tool's
+    /// --remove-dead-slot can unmark a dead slot.
     ///
     /// index type: u64 (see `SlotColumn`)
     /// value type: bool
@@ -195,7 +209,10 @@ pub mod columns {
     pub struct BankHash;
 
     #[derive(Debug)]
-    /// The root column
+    /// The root column.
+    ///
+    /// This column family persists whether a slot is a root.  Slots on the
+    /// main fork will be inserted into this column when they are finalized.
     ///
     /// index type: u64 (see `SlotColumn`)
     /// value type: bool
@@ -622,6 +639,11 @@ pub trait ProtobufColumn: Column {
 
 /// SlotColumn is a trait for slot-based column families.  Its index is
 /// essentially Slot (or more generally speaking, has a 1:1 mapping to Slot).
+///
+/// The clean-up of any LedgerColumn that implements SlotColumn is managed by
+/// [`LedgerCleanupService`], which will periodically deprecate and purge
+/// oldest entries that are older than the latest root in order to maintain the
+/// configured --limit-ledger-size under the validator argument.
 pub trait SlotColumn<Index = u64> {}
 
 impl<T: SlotColumn> Column for T {
@@ -1552,12 +1574,12 @@ where
 impl<'a> WriteBatch<'a> {
     pub fn put_bytes<C: Column + ColumnName>(&mut self, key: C::Index, bytes: &[u8]) -> Result<()> {
         self.write_batch
-            .put_cf(self.get_cf::<C>(), &C::key(key), bytes);
+            .put_cf(self.get_cf::<C>(), C::key(key), bytes);
         Ok(())
     }
 
     pub fn delete<C: Column + ColumnName>(&mut self, key: C::Index) -> Result<()> {
-        self.write_batch.delete_cf(self.get_cf::<C>(), &C::key(key));
+        self.write_batch.delete_cf(self.get_cf::<C>(), C::key(key));
         Ok(())
     }
 
@@ -1568,7 +1590,7 @@ impl<'a> WriteBatch<'a> {
     ) -> Result<()> {
         let serialized_value = serialize(&value)?;
         self.write_batch
-            .put_cf(self.get_cf::<C>(), &C::key(key), &serialized_value);
+            .put_cf(self.get_cf::<C>(), C::key(key), serialized_value);
         Ok(())
     }
 

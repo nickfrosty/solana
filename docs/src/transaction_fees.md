@@ -27,24 +27,22 @@ Transaction fees offer many benefits in the Solana [economic design](#basic-econ
 
 - they provide compensation to the validator network for the CPU/GPU resources necessary to process transactions,
 - reduce network spam by introducing real cost to transactions,
-- and provide potential long-term economic stability of the network through a protocol-captured minimum fee amount per transaction
+- and provide long-term economic stability to the network through a protocol-captured minimum fee amount per transaction
 
 > **NOTE:** Network consensus votes are sent as normal system transfers, which means that validators pay transaction fees to participate in consensus.
 
 ## Basic economic design
 
-Many current blockchain economies \(e.g. Bitcoin, Ethereum\), rely on _protocol-based rewards_ to support the economy in the short term. And when the protocol derived rewards expire, predict that the revenue generated through _transaction fees_ will support the economy in the long term.
+Many blockchain networks \(e.g. Bitcoin and Ethereum\), rely on inflationary _protocol-based rewards_ to secure the network in the short-term. Over the long-term, these networks will increasingly rely on _transaction fees_ to sustain security.
 
-In an attempt to create a sustainable economy on Solana through _protocol-based rewards_ and _transaction fees_:
+The same is true on Solana. Specifically:
 
-- a fixed portion (initially 50%) of each transaction fee is _burned_ (aka destroyed),
-- with the remaining fee going to the current [leader](./terminology.md#leader) processing the transaction.
-
-A scheduled global inflation rate provides a source for [rewards](./implemented-proposals/staking-rewards.md) distributed to [Solana Validators](../src/running-validator.md).
+- A fixed proportion (initially 50%) of each transaction fee is _burned_ (destroyed), with the remaining going to the current [leader](./terminology.md#leader) processing the transaction.
+- A scheduled global inflation rate provides a source for [rewards](./implemented-proposals/staking-rewards.md) distributed to [Solana Validators](../src/running-validator.md).
 
 ### Why burn some fees?
 
-As mentioned above, a fixed proportion of each transaction fee is _burned_ (aka destroyed). The intent of this design is to retain leader incentive to include as many transactions as possible within the leader-slot time. While still providing an inflation limiting mechanism that protects against "tax evasion" attacks \(i.e. side-channel fee payments\).
+As mentioned above, a fixed proportion of each transaction fee is _burned_ (destroyed). This is intended to cement the economic value of SOL and thus sustain the network's security. Unlike a scheme where transactions fees are completely burned, leaders are still incentivized to include as many transactions as possible in their slots.
 
 Burnt fees can also help prevent malicious validators from censoring transactions by being considered in [fork](./terminology.md#fork) selection.
 
@@ -52,7 +50,7 @@ Burnt fees can also help prevent malicious validators from censoring transaction
 
 In the case of a [Proof of History (PoH)](./terminology.md#proof-of-history-poh) fork with a malicious, censoring leader:
 
-- due to the fees lost from censoring, we would expect the total fees destroyed to be **_less than_** a comparable honest fork
+- due to the fees lost from censoring, we would expect the total fees burned to be **_less than_** a comparable honest fork
 - if the censoring leader is to compensate for these lost protocol fees, they would have to replace the burnt fees on their fork themselves
 - thus potentially reducing the incentive to censor in the first place
 
@@ -65,7 +63,7 @@ Transactions fees are calculated based on two main parts:
 
 Since each transaction may require a different amount of computational resources, they are alloted a maximum number of _compute units_ per transaction known as the "[_compute budget_](./terminology.md#compute-budget)".
 
-The execution of each instruction within a transactions consumes a different number of _compute units_. After the maximum number of _computer units_ has been consumed (aka compute budget exhaustion), the runtime will halt the transaction and return an error. Resulting in a failed transaction.
+The execution of each instruction within a transaction consumes a different number of _compute units_. After the maximum number of _compute units_ has been consumed (aka compute budget exhaustion), the runtime will halt the transaction and return an error. This results in a failed transaction.
 
 > **Learn more:** compute units and the [Compute Budget](./developing/programming-model/runtime#compute-budget) in the Runtime and [requesting a fee estimate](/api#getfeeformessage) from the RPC.
 
@@ -76,3 +74,13 @@ Recently, Solana has introduced an optional fee called the "_[prioritization fee
 The prioritization fee is calculated by multiplying the requested maximum _compute units_ by the compute-unit price (specified in increments of 0.000001 lamports per compute unit) rounded up to the nearest lamport.
 
 You can read more about the [compute budget instruction](./developing/programming-model/runtime.md#compute-budget) here.
+
+## Fee Collection
+
+Transactions are required to have at least one account which has signed the transaction and is writable. Writable signer accounts are serialized first in the list of transaction accounts and the first of these accounts is always used as the "fee payer".
+
+Before any transaction instructions are processed, the fee payer account balance will be deducted to pay for transaction fees. If the fee payer balance is not sufficient to cover transaction fees, the transaction will be dropped by the cluster. If the balance was sufficient, the fees will be deducted whether the transaction is processed successfully or not. In fact, if any of the transaction instructions return an error or violate runtime restrictions, all account changes _except_ the transaction fee deduction will be rolled back.
+
+## Fee Distribution
+
+Transaction fees are partially burned and the remaining fees are collected by the validator that produced the block that the corresponding transactions were included in. The transaction fee burn rate was initialized as 50% when inflation rewards were enabled at the beginning of 2021 and has not changed so far. These fees incentivize a validator to process as many transactions as possible during its slots in the leader schedule. Collected fees are deposited in the validator's account (listed in the leader schedule for the current slot) after processing all of the transactions included in a block.

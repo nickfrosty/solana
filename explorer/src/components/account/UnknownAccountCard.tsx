@@ -34,14 +34,20 @@ export function UnknownAccountCard({ account }: { account: Account }) {
         <tr>
           <td>Balance (SOL)</td>
           <td className="text-lg-end">
-            <SolBalance lamports={account.lamports} />
+            {account.lamports === 0 ? (
+              "Account does not exist"
+            ) : (
+              <SolBalance lamports={account.lamports} />
+            )}
           </td>
         </tr>
 
-        <tr>
-          <td>Allocated Data Size</td>
-          <td className="text-lg-end">{account.space} byte(s)</td>
-        </tr>
+        {account.space !== undefined && (
+          <tr>
+            <td>Allocated Data Size</td>
+            <td className="text-lg-end">{account.space} byte(s)</td>
+          </tr>
+        )}
 
         <tr>
           <td>Assigned Program Id</td>
