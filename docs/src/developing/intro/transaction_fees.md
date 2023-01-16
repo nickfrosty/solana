@@ -8,7 +8,7 @@ The small fees paid to process [instructions](./terminology.md#instruction) on t
 
 As each transaction (which contains one or more instructions) is sent through the network, it gets processed by the current leader validation-client. Once confirmed as a global state transaction, this _transaction fee_ is paid to the network to help support the economic design of the Solana blockchain.
 
-> NOTE: Transactions fees are different from the blockchain's data storage fee called [rent](./rent.md)
+> NOTE: Transactions fees are different from the blockchain's data storage fee called [rent](./../../learn/economics/rent.md)
 
 ### Transaction Fee Calculation
 

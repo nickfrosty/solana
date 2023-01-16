@@ -255,11 +255,11 @@ The public key of a [keypair](#keypair).
 
 Fee paid by [Accounts](#account) and [Programs](#program) to store data on the blockchain. When accounts do not have enough balance to pay rent, they may be Garbage Collected.
 
-See also [rent exempt](#rent-exempt) below. Learn more about rent here: [What is rent?](../src/developing/intro/rent.md).
+See also [rent exempt](#rent-exempt) below. Learn more about rent here: [What is rent?](./learn/economics/rent.md).
 
 ## rent exempt
 
-Accounts that maintain more than 2 years with of rent payments in their account are considered "_rent exempt_" and will not incur the [collection of rent](../src/developing/intro/rent.md#collecting-rent).
+Accounts that maintain more than 2 years with of rent payments in their account are considered "_rent exempt_" and will not incur the [collection of rent](./learn/economics/rent.md#collecting-rent).
 
 ## root
 

@@ -67,7 +67,7 @@ function Home() {
               />
 
               <Card
-                to="wallet-guide"
+                to="wallet-guide/cli"
                 header={{
                   label: "📲 Manage a Wallet",
                   translateId: "manage-wallet",
@@ -80,7 +80,7 @@ function Home() {
               />
 
               <Card
-                to="introduction"
+                to="learn/intro"
                 header={{
                   label: "🤯 Learn How Solana Works",
                   translateId: "learn-how",
