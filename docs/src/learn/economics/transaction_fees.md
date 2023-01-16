@@ -11,8 +11,6 @@ As each transaction (which contains one or more instructions) is sent through th
 > **NOTE:** Transaction fees are different from [account rent](./terminology.md#rent)!
 > While transaction fees are paid to process instructions on the Solana network, rent is paid to store data on the blockchain.
 
-> You can learn more about rent here: [What is rent?](./developing/intro/rent.md)
-
 ## Why pay transaction fees?
 
 Transaction fees offer many benefits in the Solana [economic design](#basic-economic-design) described below. Mainly:
@@ -57,7 +55,7 @@ Since each transaction may require a different amount of computational resources
 
 The execution of each instruction within a transaction consumes a different number of _compute units_. After the maximum number of _compute units_ has been consumed (aka compute budget exhaustion), the runtime will halt the transaction and return an error. This results in a failed transaction.
 
-> **Learn more:** compute units and the [Compute Budget](./developing/programming-model/runtime#compute-budget) in the Runtime and [requesting a fee estimate](./developing/clients/jsonrpc-api.md#getfeeformessage) from the RPC.
+> **Learn more:** compute units and the [Compute Budget](../../developing/programming-model/runtime.md#compute-budget) in the Runtime and [requesting a fee estimate](../../developing/clients/jsonrpc-api.md#getfeeformessage) from the RPC.
 
 ## Prioritization fee
 
@@ -65,7 +63,7 @@ Recently, Solana has introduced an optional fee called the "_[prioritization fee
 
 The prioritization fee is calculated by multiplying the requested maximum _compute units_ by the compute-unit price (specified in increments of 0.000001 lamports per compute unit) rounded up to the nearest lamport.
 
-You can read more about the [compute budget instruction](./developing/programming-model/runtime.md#compute-budget) here.
+You can read more about the [compute budget instruction](../../developing/programming-model/runtime.md#compute-budget) here.
 
 ## Fee Collection
 

@@ -31,7 +31,11 @@ module.exports = {
       type: "category",
       collapsed: false,
       label: "Economics",
-      items: ["learn/economics", "learn/economics/rent"],
+      items: [
+        "learn/economics",
+        "learn/economics/transaction_fees",
+        "learn/economics/rent",
+      ],
     },
     {
       type: "category",
@@ -431,6 +435,5 @@ module.exports = {
         "inflation/adjusted_staking_yield",
       ],
     },
-    "transaction_fees",
   ],
 };

@@ -45,6 +45,7 @@ cat > "$CONFIG_FILE" <<EOF
     { "source": "/apps/webwallet", "destination": "/wallet-guide" },
     { "source": "/introduction", "destination": "/learn/intro" },
     { "source": "/history", "destination": "/learn/intro/history" },
+    { "source": "/transaction_fees", "destination": "/learn/economics/transaction_fees" },
     { "source": "/economics_overview", "destination": "/learn/economics" },
     { "source": "/wallet-guide", "destination": "/learn/basics/wallets" },
     { "source": "/storage_rent_economics", "destination": "/learn/economics/rent" },

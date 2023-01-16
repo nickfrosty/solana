@@ -125,7 +125,7 @@ module.exports = {
           items: [
             {
               label: "Learn",
-              to: "introduction",
+              to: "learn/intro",
             },
             {
               label: "Developers",
