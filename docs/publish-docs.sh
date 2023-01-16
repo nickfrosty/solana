@@ -43,6 +43,9 @@ cat > "$CONFIG_FILE" <<EOF
     { "source": "/apps/rent", "destination": "/developing/programming-model/accounts#rent" },
     { "source": "/apps/sysvars", "destination": "/developing/runtime-facilities/sysvars" },
     { "source": "/apps/webwallet", "destination": "/wallet-guide" },
+    { "source": "/introduction", "destination": "/learn/intro" },
+    { "source": "/history", "destination": "/learn/intro/history" },
+    { "source": "/economics_overview", "destination": "/learn/intro/economics" },
     { "source": "/implemented-proposals/cross-program-invocation", "destination": "/developing/programming-model/calling-between-programs" },
     { "source": "/implemented-proposals/program-derived-addresses", "destination": "/developing/programming-model/calling-between-programs#program-derived-addresses" },
     { "source": "/implemented-proposals/secp256k1_instruction", "destination": "/developing/runtime-facilities/programs#secp256k1-program" }
