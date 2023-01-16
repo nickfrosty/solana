@@ -1,5 +1,6 @@
 ---
-title: Introduction
+title: High-level Overview
+sidebar_label: High-level Overview
 ---
 
 ## What is Solana?

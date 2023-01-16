@@ -1,5 +1,6 @@
 ---
-title: History
+title: History of Solana
+sidebar_label: History
 ---
 
 In November of 2017, Anatoly Yakovenko published a whitepaper describing Proof

@@ -1,5 +1,6 @@
 ---
 title: Solana Economics Overview
+sidebar_label: Economics
 ---
 
 **Subject to change.**
