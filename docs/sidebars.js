@@ -30,6 +30,12 @@ module.exports = {
     {
       type: "category",
       collapsed: false,
+      label: "Economics",
+      items: ["learn/economics/rent"],
+    },
+    {
+      type: "category",
+      collapsed: false,
       label: "Dive into Solana",
       items: [
         {
@@ -152,11 +158,6 @@ module.exports = {
           type: "doc",
           id: "developing/intro/programs",
           label: "Programs",
-        },
-        {
-          type: "doc",
-          id: "developing/intro/rent",
-          label: "Rent",
         },
         {
           type: "doc",
