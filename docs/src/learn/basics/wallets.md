@@ -1,5 +1,6 @@
 ---
-title: Solana Wallet Guide
+title: What is a wallet?
+sidebar_label: Wallets
 ---
 
 This document describes the different wallet options that are available to users

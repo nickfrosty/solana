@@ -10,13 +10,9 @@ module.exports = {
     {
       type: "category",
       collapsed: false,
-      label: "Getting started with Solana",
+      label: "Explore the Basics",
       items: [
-        {
-          type: "doc",
-          id: "wallet-guide",
-          label: "Wallets",
-        },
+        "learn/basics/wallets",
         // This will be the future home of the `staking` page, with the introductory info on what staking on Solana looks like
         // {
         //   type: "doc",
@@ -24,6 +20,12 @@ module.exports = {
         //   label: "Staking",
         // },
       ],
+    },
+    {
+      type: "category",
+      collapsed: false,
+      label: "Core Concepts",
+      items: ["learn/intro"],
     },
     {
       type: "category",
