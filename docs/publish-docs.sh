@@ -45,7 +45,7 @@ cat > "$CONFIG_FILE" <<EOF
     { "source": "/apps/webwallet", "destination": "/wallet-guide" },
     { "source": "/introduction", "destination": "/learn/intro" },
     { "source": "/history", "destination": "/learn/intro/history" },
-    { "source": "/economics_overview", "destination": "/learn/intro/economics" },
+    { "source": "/economics_overview", "destination": "/learn/economics" },
     { "source": "/wallet-guide", "destination": "/learn/basics/wallets" },
     { "source": "/developing/intro/rent", "destination": "/learn/economics/rent" },
     { "source": "/implemented-proposals/cross-program-invocation", "destination": "/developing/programming-model/calling-between-programs" },

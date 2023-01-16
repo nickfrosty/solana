@@ -4,7 +4,7 @@ module.exports = {
       type: "category",
       collapsed: false,
       label: "Introduction to Solana",
-      items: ["learn/intro", "learn/intro/economics", "learn/intro/history"],
+      items: ["learn/intro", "learn/intro/history"],
     },
     "terminology",
     {
@@ -31,7 +31,7 @@ module.exports = {
       type: "category",
       collapsed: false,
       label: "Economics",
-      items: ["learn/economics/rent"],
+      items: ["learn/economics", "learn/economics/rent"],
     },
     {
       type: "category",
@@ -422,11 +422,6 @@ module.exports = {
     "integrations/retrying-transactions",
   ],
   economicsSidebar: [
-    // {
-    //   type: "doc",
-    //   id: "learn/intro/economics",
-    //   // label: "How do the economics work?",
-    // },
     {
       type: "category",
       label: "Inflation Design",
