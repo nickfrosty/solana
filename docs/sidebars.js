@@ -1,5 +1,5 @@
 module.exports = {
-  introductionSidebar: [
+  learnSidebar: [
     {
       type: "category",
       collapsed: false,
@@ -10,12 +10,11 @@ module.exports = {
           id: "introduction",
           label: "What is Solana?",
         },
-        // This will be the future home for the economics overview page
-        // {
-        //   type: "doc",
-        //   id: "economics_overview",
-        //   label: "How do the economics work?",
-        // },
+        {
+          type: "doc",
+          id: "economics_overview",
+          label: "How do the economics work?",
+        },
         {
           type: "doc",
           id: "history",
@@ -61,11 +60,6 @@ module.exports = {
           type: "ref",
           label: "Command Line",
           id: "cli",
-        },
-        {
-          type: "ref",
-          label: "Economics",
-          id: "economics_overview",
         },
         {
           type: "ref",
