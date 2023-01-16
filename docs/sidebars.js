@@ -6,6 +6,7 @@ module.exports = {
       label: "Introduction to Solana",
       items: ["learn/intro", "learn/intro/economics", "learn/intro/history"],
     },
+    "terminology",
     {
       type: "category",
       collapsed: false,
@@ -29,7 +30,6 @@ module.exports = {
       collapsed: false,
       label: "Dive into Solana",
       items: [
-        "terminology",
         {
           type: "link",
           href: "/developers",
