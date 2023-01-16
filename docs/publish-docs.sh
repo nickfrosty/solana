@@ -47,6 +47,7 @@ cat > "$CONFIG_FILE" <<EOF
     { "source": "/history", "destination": "/learn/intro/history" },
     { "source": "/economics_overview", "destination": "/learn/economics" },
     { "source": "/wallet-guide", "destination": "/learn/basics/wallets" },
+    { "source": "/storage_rent_economics", "destination": "/learn/economics/rent" },
     { "source": "/developing/intro/rent", "destination": "/learn/economics/rent" },
     { "source": "/implemented-proposals/cross-program-invocation", "destination": "/developing/programming-model/calling-between-programs" },
     { "source": "/implemented-proposals/program-derived-addresses", "destination": "/developing/programming-model/calling-between-programs#program-derived-addresses" },

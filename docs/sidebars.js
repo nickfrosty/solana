@@ -432,6 +432,5 @@ module.exports = {
       ],
     },
     "transaction_fees",
-    "storage_rent_economics",
   ],
 };
