@@ -1,5 +1,7 @@
 ---
-title: Solana's Proposed Inflation Schedule
+title: Proposed Inflation Schedule
+sidebar_label: Proposed Inflation Schedule
+sidebar_position: 2
 ---
 
 As mentioned above, the network's _Inflation Schedule_ is uniquely described by three parameters: _Initial Inflation Rate_, _Dis-inflation Rate_ and _Long-term Inflation Rate_. When considering these numbers, there are many factors to take into account:

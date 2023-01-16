@@ -81,6 +81,7 @@ sudo sysctl -p /etc/sysctl.d/21-solana-validator.conf
 ```
 
 ##### **Increase systemd and session file limits**
+
 Add
 
 ```
@@ -221,19 +222,19 @@ Or to see in finer detail:
 solana balance --lamports
 ```
 
-Read more about the [difference between SOL and lamports here](../introduction.md#what-are-sols).
+Read more about the [difference between SOL and lamports here](./../learn/intro.md#what-are-sols).
 
 ## Create Authorized Withdrawer Account
 
 If you haven't already done so, create an authorized-withdrawer keypair to be used
-as the ultimate authority over your validator.  This keypair will have the
+as the ultimate authority over your validator. This keypair will have the
 authority to withdraw from your vote account, and will have the additional
-authority to change all other aspects of your vote account.  Needless to say,
+authority to change all other aspects of your vote account. Needless to say,
 this is a very important keypair as anyone who possesses it can make any
 changes to your vote account, including taking ownership of it permanently.
 So it is very important to keep your authorized-withdrawer keypair in a safe
-location.  It does not need to be stored on your validator, and should not be
-stored anywhere from where it could be accessed by unauthorized parties.  To
+location. It does not need to be stored on your validator, and should not be
+stored anywhere from where it could be accessed by unauthorized parties. To
 create your authorized-withdrawer keypair:
 
 ```bash
@@ -363,7 +364,7 @@ WantedBy=multi-user.target
 
 Now create `/home/sol/bin/validator.sh` to include the desired
 `solana-validator` command-line. Ensure that the 'exec' command is used to
-start the validator process (i.e. "exec solana-validator ...").  This is
+start the validator process (i.e. "exec solana-validator ..."). This is
 important because without it, logrotate will end up killing the validator
 every time the logs are rotated.
 

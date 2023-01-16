@@ -436,15 +436,4 @@ module.exports = {
     "integrations/exchange",
     "integrations/retrying-transactions",
   ],
-  economicsSidebar: [
-    {
-      type: "category",
-      label: "Inflation Design",
-      items: [
-        "inflation/terminology",
-        "inflation/inflation_schedule",
-        "inflation/adjusted_staking_yield",
-      ],
-    },
-  ],
 };

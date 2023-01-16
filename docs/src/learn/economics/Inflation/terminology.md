@@ -1,5 +1,7 @@
 ---
-title: Terminology
+title: Inflation Terminology
+sidebar_label: Terminology
+sidebar_position: 1
 ---
 
 Many terms are thrown around when discussing inflation and the related components (e.g. rewards/yield/interest), we try to define and clarify some commonly used concept here:

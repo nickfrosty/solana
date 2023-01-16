@@ -50,6 +50,9 @@ cat > "$CONFIG_FILE" <<EOF
     { "source": "/wallet-guide", "destination": "/learn/basics/wallets" },
     { "source": "/storage_rent_economics", "destination": "/learn/economics/rent" },
     { "source": "/developing/intro/rent", "destination": "/learn/economics/rent" },
+    { "source": "/inflation/terminology", "destination": "/learn/economics/inflation/terminology" },
+    { "source": "/inflation/inflation_schedule", "destination": "/learn/economics/inflation/inflation_schedule" },
+    { "source": "/inflation/adjusted_staking_yield", "destination": "/learn/economics/inflation/adjusted_staking_yield" },
     { "source": "/implemented-proposals/cross-program-invocation", "destination": "/developing/programming-model/calling-between-programs" },
     { "source": "/implemented-proposals/program-derived-addresses", "destination": "/developing/programming-model/calling-between-programs#program-derived-addresses" },
     { "source": "/implemented-proposals/secp256k1_instruction", "destination": "/developing/runtime-facilities/programs#secp256k1-program" }
