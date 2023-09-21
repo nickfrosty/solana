@@ -120,7 +120,7 @@ The `"confirmed"` commitment level should almost always be used for RPC requests
 
 But feel free to consider the other options:
 
-- Choosing `"processed"` will let you fetch the most recent blockhash compared to other commitment levels and therefore gives you the most time to prepare and process a transaction. But due to the prevalence of forking in the Solana protocol, roughly 5% of blocks don’t end up being finalized by the cluster so there’s a real chance that your transaction uses a blockhash that belongs to a dropped fork. Transactions that use blockhashes for abandoned blocks won’t ever be considered recent by any blocks that are in the finalized blockchain.
+- Choosing `"processed"` will let you fetch the most recent blockhash, compared to other commitment levels, and therefore gives you the most time to prepare and process a transaction. This blockhash would be taken from the latest optimistically confirmed block. While there is a potential that optimistically confirmed blocks would not be confirmed, resulting in the specific blockhash being invalid and the transaction failing, this has not happened before.
 - Using the default commitment level `"finalized"` will eliminate any risk that the blockhash you choose will belong to a dropped fork. The tradeoff is that there is typically at least a 32 slot difference between the most recent confirmed block and the most recent finalized block. This tradeoff is pretty severe and effectively reduces the expiration of your transactions by about 13 seconds but this could be even more during unstable cluster conditions.
 
 ### Use an appropriate preflight commitment level
